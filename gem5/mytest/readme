@@ -1,0 +1,18 @@
+scons build/ARM/gem5.opt
+
+b 287
+
+./build/ARM/gem5.opt configs/example/se.py -c mytest/test
+
+
+
+(Pdb) b 287
+Breakpoint 1 at /home/cisco/gem5/configs/example/se.py:287
+
+(Pdb) b 261
+Breakpoint 2 at /home/cisco/gem5/configs/common/Simulation.py:261
+
+./build/ARM/gem5.debug --debug-flags=Exec configs/example/se.py -c mytest/test 1>log
+
+
+./build/ARM/gem5.debug --debug-flags=Exec configs/example/se.py --cpu-clock=1MHz --sys-clock=1MHz -c mytest/des 1>des.default.log.2
