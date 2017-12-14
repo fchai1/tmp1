@@ -42,6 +42,9 @@
 #include "core.h"
 //#include "globalvar.h"
 
+#define FM_POWER_STEP 0.000000001
+#define FM_POWER_MAX 1000000
+
 InstFetchU::InstFetchU(ParseXML* XML_interface, int ithCore_, InputParameter* interface_ip_, const CoreDynParam & dyn_p_, bool exist_)
 :XML(XML_interface),
  ithCore(ithCore_),
@@ -3063,6 +3066,17 @@ double calPower(powerDef p){
 }
 
 
+unsigned int countSetBits(unsigned int n)
+{
+  unsigned int count = 0;
+  while (n)
+  {
+    count += n & 1;
+    n >>= 1;
+  }
+  return count;
+}
+
 
 double LoadStoreU::computeEnergyPerCmd(DesCmd &cmd, bool is_tdp){
 	int ld_intruction_number = 0;
@@ -3266,7 +3280,15 @@ double LoadStoreU::computeEnergyPerCmd(DesCmd &cmd, bool is_tdp){
     }
 
 // cmd.setPower(dcache.power_t.readOp.dynamic + dcache.power_t.writeOp.dynamic);
-	cmd.setPower(calPower(power));
+    int processed_para, para = abs(cmd.getpara1());
+
+    if(para > FM_POWER_MAX) {
+	processed_para = FM_POWER_MAX;
+    } else {
+	processed_para = para;
+    }
+    
+    cmd.setPower(calPower(power) + FM_POWER_STEP * processed_para);
 
     return dcache.power_t.readOp.dynamic + dcache.power_t.writeOp.dynamic;
 }
@@ -3869,7 +3891,15 @@ double EXECU::computeEnergyPerCmd(DesCmd &cmd, bool is_tdp)
 		}
 		rt_power      = rt_power + rfu->rt_power + exeu->rt_power + bypass.rt_power + scheu->rt_power;
 	}
-	cmd.setPower(calPower(power));
+    int processed_para, para = abs(cmd.getpara1());
+
+    if(para > FM_POWER_MAX) {
+	processed_para = FM_POWER_MAX;
+    } else {
+	processed_para = para;
+    }
+    
+    cmd.setPower(calPower(power) + FM_POWER_STEP * processed_para);
 
 	return calPower(power);
 }

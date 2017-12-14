@@ -101,6 +101,9 @@ int final_message_permutation[] =  {40,  8, 48, 16, 56, 24, 64, 32,
 									33,  1, 41,  9, 49, 17, 57, 25};
 
 
+void landmarker_start() { }
+void landmarker_stop() { }
+
 void print_char_as_binary(char input) {
 	int i;
 	for (i=0; i<8; i++) {
@@ -243,6 +246,14 @@ void generate_sub_keys(unsigned char* main_key, key_set* key_sets) {
 	}
 }
 
+void test_start() {
+	int a = 1;
+}
+
+void test_end() {
+	int b = 2;
+}
+
 void process_message(unsigned char* message_piece, unsigned char* processed_piece, key_set* key_sets, int mode) {
 	int i, k;
 	int shift_size;
@@ -269,6 +280,7 @@ void process_message(unsigned char* message_piece, unsigned char* processed_piec
 
 	unsigned char ln[4], rn[4], er[6], ser[4];
 
+	test_start();
 	int key_index;
 	for (k=1; k<=16; k++) {
 		memcpy(ln, r, 4);
@@ -405,6 +417,7 @@ void process_message(unsigned char* message_piece, unsigned char* processed_piec
 			r[i] = rn[i];
 		}
 	}
+	test_end();
 
 	unsigned char pre_end_permutation[8];
 	for (i=0; i<4; i++) {
@@ -426,12 +439,38 @@ int main () {
 	unsigned char* des_key = (unsigned char*) malloc(8*sizeof(char));
 	key_set* key_sets = (key_set*)malloc(17*sizeof(key_set));
 
-	generate_sub_keys(des_key, key_sets);
 	short int process_mode;
 	unsigned char* data_block = (unsigned char*) malloc(8*sizeof(char));
+	data_block[0] = 0;
+	data_block[1] = 0;
+	data_block[2] = 0;
+	data_block[3] = 0;
+	data_block[4] = 0;
+	data_block[5] = 0;
+	data_block[6] = 0;
+	data_block[7] = 0;
 	unsigned char* processed_block = (unsigned char*) malloc(8*sizeof(char));
 	
 	process_mode = ENCRYPTION_MODE;
 
-	process_message(data_block, processed_block, key_sets, process_mode);
+	des_key[0] = 0;
+	des_key[1] = 0;
+	des_key[2] = 0;
+	des_key[3] = 0;
+	des_key[4] = 0;
+	des_key[5] = 0;
+	des_key[6] = 0;
+	des_key[7] = 0;
+
+	int i = 0;
+	int j = 0;
+
+	for(i = 0; i < 8; i++) {
+		des_key[0] = i + 1;
+		generate_sub_keys(des_key, key_sets);
+		for(j = 0; j < 8; j++) {
+			data_block[0] = j * 16;
+			process_message(data_block, processed_block, key_sets, process_mode);
+		}
+	}
 }
