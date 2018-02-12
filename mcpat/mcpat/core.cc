@@ -40,10 +40,12 @@
 #include <cmath>
 #include <assert.h>
 #include "core.h"
+#include "desparse.h"
 //#include "globalvar.h"
 
-#define FM_POWER_STEP 0.000000001
-#define FM_POWER_MAX 1000000
+#define FM_POWER_STEP 0.0000001
+#define FM_POWER_MAX 10000
+#define FM_SCHEDULE_DURATION 5000000LL
 
 InstFetchU::InstFetchU(ParseXML* XML_interface, int ithCore_, InputParameter* interface_ip_, const CoreDynParam & dyn_p_, bool exist_)
 :XML(XML_interface),
@@ -4043,7 +4045,25 @@ void EXECU::displayEnergy(uint32_t indent,int plevel,bool is_tdp)
 
 }
 
+#define ENABLE_SCHEDULE 1
+
 void Core::computeEnergy_fm(vector<DesCmd> &cmdVector) {
+	long long i = 1;
+	init_schedule();
+	int cnt = 0;
+	long long tick0 = 0;
+#if ENABLE_SCHEDULE
+	for(vector<DesCmd>::iterator it = cmdVector.begin(); it != cmdVector.end(); ++it) {
+		if(tick0 == 0) {
+			tick0 = it->getTick();
+		}
+		if((it->getTick() - tick0) >= i * FM_SCHEDULE_DURATION) {
+			i ++;
+			addSchedulingBlock(cmdVector, it, arm_reg);
+		}
+	}
+#endif
+
 	for(vector<DesCmd>::iterator it = cmdVector.begin(); it != cmdVector.end(); ++it) {
 		switch(it->getop()) {
 			case LDR:
@@ -4054,6 +4074,7 @@ void Core::computeEnergy_fm(vector<DesCmd> &cmdVector) {
 			case ADD:
 			case SUB:
 			case OOR:
+			case MATH:
 				exu->computeEnergyPerCmd(*it, true);
 				break;
 		}

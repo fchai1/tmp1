@@ -13,6 +13,7 @@ enum cmdType {
 	SUB,
 	OOR,
 	CMP,
+	MATH,
 	UNKNOW,
 };
 
@@ -23,6 +24,9 @@ private:
 	long long para1;
 	long long para2;
 	long long para3;
+	string p1string;
+	string p2string;
+	string p3string;
 	double power;
 	string opstr;
 	
@@ -41,6 +45,8 @@ private:
 			return OOR;
 		} else if (str.find("cmps") != std::string::npos){
 			return OOR;
+		} else if (str.find("cmps") != std::string::npos){
+			return MATH;
 		}
 
 		return UNKNOW;
@@ -54,8 +60,27 @@ public:
 
 		this->op = toCmdType(o);
 		this->opstr = o;
+		this->p1string = string("");
+		this->p2string = string("");
+		this->p3string = string("");
+	}
+	
+	DesCmd(const DesCmd &cmd){
+		tick = cmd.tick;
+		op = cmd.op;
+		p1string = cmd.p1string;
+		p2string = cmd.p2string;
+		p3string = cmd.p3string;
+		para1 = cmd.para1;
+		para2 = cmd.para2;
+		para3 = cmd.para3;
+		power = cmd.power;
+		opstr = cmd.opstr;
 	}
 
+	void setTick(long long t){
+		this->tick = t;
+	}
 	long long getTick(){
 		return this->tick;
 	}
@@ -90,6 +115,20 @@ public:
 	}
 	void setp3(long long p3){
 		this->para3 = p3;
+	}
+	
+	void setP1String(string s){
+		this->p1string = s;
+	}
+	void setP2String(string s){
+		this->p2string = s;
+	}
+	void setP3String(string s){
+		this->p3string = s;
+	}
+
+	string getP1String() {
+		return p1string;
 	}
 };
 

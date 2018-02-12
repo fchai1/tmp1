@@ -436,6 +436,8 @@ void process_message(unsigned char* message_piece, unsigned char* processed_piec
 }
 
 void fm_schedule() {
+
+int array[32];
 asm ( "str.w   r0, [sp, #4]" );
 asm ( "str.w   r1, [sp, #8]" );
 asm ( "str.w   r2, [sp, #12]" );
@@ -460,9 +462,23 @@ asm ( "orrs   r2, r2, r3"); // r2 = r2 | r3;
 asm ( "eors   r3, r3, r4"); // r3 = r3 ^ r4;
 asm ( "mov.w   r4, r4, LSL #1"); // r3 = r4 << 1;
 asm ( "mov.w   r5, r5, ASR #2"); // r5 = r5 >> 1;
+
+
+asm ( "ldr.w   r0, [sp, #-4]" );
+asm ( "ldr.w   r1, [sp, #-8]" );
+asm ( "ldr.w   r2, [sp, #-12]" );
+asm ( "ldr.w   r3, [sp, #-16]" );
+asm ( "ldr.w   r4, [sp, #-20]" );
+asm ( "ldr.w   r5, [sp, #-24]" );
+asm ( "ldr.w   r6, [sp, #-28]" );
+asm ( "ldr.w   r7, [sp, #-32]" );
+asm ( "ldr.w   r8, [sp, #-36]" );
+asm ( "ldr.w   r9, [sp, #-40]" );
+asm ( "ldr.w   r10, [sp, #-44]" );
 }
 
 int main () {
+#if 0
 	unsigned char* des_key = (unsigned char*) malloc(8*sizeof(char));
 	key_set* key_sets = (key_set*)malloc(17*sizeof(key_set));
 
@@ -492,18 +508,17 @@ int main () {
 	int i = 0;
 	int j = 0;
 
-#define TEST_PER_KEY 8
-#define DATA_PER_TEST 32
-#define DATA_STEP 2
-
-	for(i = 0; i < TEST_PER_KEY; i++) {
+	for(i = 0; i < 8; i++) {
 		des_key[0] = i + 1;
 		generate_sub_keys(des_key, key_sets);
-		for(j = 0; j < DATA_PER_TEST; j++) {
-			data_block[0] = j * DATA_STEP;
+		for(j = 0; j < 8; j++) {
+			data_block[0] = j * 16;
 			process_message(data_block, processed_block, key_sets, process_mode);
 		}
 	}
+#endif
+
+	fm_schedule();
 }
 
 
