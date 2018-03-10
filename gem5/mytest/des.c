@@ -492,8 +492,8 @@ int main () {
 	int i = 0;
 	int j = 0;
 
-#define TEST_PER_KEY 8
-#define DATA_PER_TEST 32
+#define TEST_PER_KEY 16
+#define DATA_PER_TEST 128
 #define DATA_STEP 2
 
 	for(i = 0; i < TEST_PER_KEY; i++) {
